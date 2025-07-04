@@ -85,13 +85,13 @@ public class MoveGenerator {
     // 全棋子统一走法生成函数
 
 
-    public static void generateAllMoves(BitBoard bitBoard, ChessColor color, BoardStateBuilder boardStateBuilder, boolean onlyKill, MoveBuffer moveBuffer, int pvMove) {
+    public static void generateAllMoves(BitBoard bitBoard, ChessColor color, BoardStateBuilder boardStateBuilder, boolean onlyKill, MoveBuffer moveBuffer) {
         long[] ownPieces = (color == ChessColor.R) ? bitBoard.redPieces : bitBoard.blackPieces;
         ChessColor enemyColor = (color == ChessColor.R) ? ChessColor.B : ChessColor.R;
         int ownKingPos = BitBoardUtil.findKingPos(bitBoard, color);
         int enemyKingPos = BitBoardUtil.findKingPos(bitBoard, enemyColor);
         for (ChessType type : ChessType.values()) {
-            generateMovesByType(moveBuffer, bitBoard, ownPieces, type, color, ownKingPos, enemyKingPos, boardStateBuilder, onlyKill, enemyColor, pvMove);
+            generateMovesByType(moveBuffer, bitBoard, ownPieces, type, color, ownKingPos, enemyKingPos, boardStateBuilder, onlyKill, enemyColor);
         }
     }
 
@@ -139,25 +139,25 @@ public class MoveGenerator {
         // 分别调用对应的走法生成函数（以你之前定义的参数顺序和方式）
         switch (pieceType) {
             case CAR:
-                CarMoveGenerator.generateCarMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                CarMoveGenerator.generateCarMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             case CANNON:
-                CannonMoveArrayGenerator.generateCannonMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                CannonMoveArrayGenerator.generateCannonMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             case HORSE:
-                HorseMoveGenerator.generateHorseMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                HorseMoveGenerator.generateHorseMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             case PRIME_MINISTER:
-                PrimeMinisterMoveGenerator.generatePrimeMinisterMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                PrimeMinisterMoveGenerator.generatePrimeMinisterMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             case GUARDS:
-                GuardsMoveGenerator.generateGuardsMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                GuardsMoveGenerator.generateGuardsMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             case KING:
-                KingMoveGenerator.generateKingMoves(bitBoard, pos, color, pieceType.getValue(), moveBuffer, ownKingPos, enemyKingPos, instance, false, enemyColor, -1);
+                KingMoveGenerator.generateKingMoves(bitBoard, pos, color, pieceType.getValue(), moveBuffer, ownKingPos, enemyKingPos, instance, false, enemyColor);
                 break;
             case SOLDIER:
-                SoldierMoveGenerator.generateSoldierMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos, -1);
+                SoldierMoveGenerator.generateSoldierMoves(pos, color, pieceType.getValue(), moveBuffer, instance, false, enemyColor, ownKingPos, enemyKingPos);
                 break;
             default:
                 break;
@@ -177,8 +177,7 @@ public class MoveGenerator {
                                             int enemyKingPos,
                                             BoardStateBuilder boardStateBuilder,
                                             boolean onlyKill,
-                                            ChessColor enemyColor,
-                                            int pvMove) {
+                                            ChessColor enemyColor) {
         long[] pieceBits = getPieceBits(bitBoard, chessType);
         for (int part = 0; part < 2; part++) {
             long bits = pieceBits[part] & ownPieces[part];
@@ -187,25 +186,25 @@ public class MoveGenerator {
                 bits &= bits - 1;
                 switch (chessType) {
                     case CAR:
-                        CarMoveGenerator.generateCarMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        CarMoveGenerator.generateCarMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     case CANNON:
-                        CannonMoveArrayGenerator.generateCannonMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        CannonMoveArrayGenerator.generateCannonMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     case HORSE:
-                        HorseMoveGenerator.generateHorseMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        HorseMoveGenerator.generateHorseMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     case PRIME_MINISTER:
-                        PrimeMinisterMoveGenerator.generatePrimeMinisterMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        PrimeMinisterMoveGenerator.generatePrimeMinisterMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     case GUARDS:
-                        GuardsMoveGenerator.generateGuardsMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        GuardsMoveGenerator.generateGuardsMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     case KING:
-                        KingMoveGenerator.generateKingMoves(bitBoard, index, color, chessType.getValue(), moveBuffer, ownKingPos, enemyKingPos, boardStateBuilder, onlyKill, enemyColor, pvMove);
+                        KingMoveGenerator.generateKingMoves(bitBoard, index, color, chessType.getValue(), moveBuffer, ownKingPos, enemyKingPos, boardStateBuilder, onlyKill, enemyColor);
                         break;
                     case SOLDIER:
-                        SoldierMoveGenerator.generateSoldierMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos, pvMove);
+                        SoldierMoveGenerator.generateSoldierMoves(index, color, chessType.getValue(), moveBuffer, boardStateBuilder, onlyKill, enemyColor, ownKingPos, enemyKingPos);
                         break;
                     default:
                         break;

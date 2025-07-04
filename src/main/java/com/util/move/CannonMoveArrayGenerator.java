@@ -46,7 +46,7 @@ public class CannonMoveArrayGenerator {
 
     public static void generateCannonMoves(int pos, ChessColor color,
                                            int type, MoveBuffer moves,
-                                           BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos, int pvMove) {
+                                           BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos) {
         int ordinal = color.ordinal();
         int enemyOrdinal = enemyColor.ordinal();
         boolean[] occupied = boardStateBuilder.occupied;
@@ -64,7 +64,7 @@ public class CannonMoveArrayGenerator {
                     break;
                 }
                 if (!onlyKill && MoveGeneratorCheck.isLineExposedAfterMove(pos, idx, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) {
-                    moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, type, ordinal, 0), pvMove);
+                    moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, type, ordinal, 0));
                 }
             }
 
@@ -75,7 +75,7 @@ public class CannonMoveArrayGenerator {
                         if (colorBoard[idx] == enemyOrdinal && MoveGeneratorCheck.isLineExposedAfterMove(pos, idx, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) {
                             byte occupiedType = typeBoard[idx];
                             int score = MoveBuffer.querySortScore(occupiedType);
-                            moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, type, occupiedType, ordinal, score), pvMove);
+                            moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, type, occupiedType, ordinal, score));
                         }
                         break;
                     }

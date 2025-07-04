@@ -5,7 +5,7 @@ import com.enumerates.ChessColor;
 public final class CarMoveGenerator {
 
     public static void generateCarMoves(int pos, ChessColor color, int chessType, MoveBuffer moves,
-                                        BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos, int pvMove) {
+                                        BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos) {
         int ordinal = color.ordinal();
         int enemyOrdinal = enemyColor.ordinal();
         boolean[] occupied = boardStateBuilder.occupied;
@@ -19,11 +19,11 @@ public final class CarMoveGenerator {
                         //评分
                         byte type = typeBoard[p];
                         int score = MoveBuffer.querySortScore(type);
-                        moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, p, chessType, type, ordinal, score), pvMove);
+                        moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, p, chessType, type, ordinal, score));
                     }
                     break; // 己方或敌方都会阻挡
                 } else if (!onlyKill && MoveGeneratorCheck.isLineExposedAfterMove(pos, p, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) { // 空格
-                    moves.addQuietMove(BitMoveUtil.buildMove(pos, p, chessType, ordinal, 0), pvMove);
+                    moves.addQuietMove(BitMoveUtil.buildMove(pos, p, chessType, ordinal, 0));
                 }
             }
         }

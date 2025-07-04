@@ -34,7 +34,7 @@ public class PrimeMinisterMoveGenerator {
 
     public static void generatePrimeMinisterMoves(int pos, ChessColor color,
                                                   int chessType, MoveBuffer moves,
-                                                  final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos, int pvMove) {
+                                                  final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos) {
         int row = POS_X[pos];
         int col = POS_Y[pos];
         int enemyOrdinal = enemyColor.ordinal();
@@ -62,10 +62,10 @@ public class PrimeMinisterMoveGenerator {
                     // 敌方棋子
                     byte type = typeBoard[idx];
                     int score = MoveBuffer.querySortScore(type);
-                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score), pvMove);
+                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score));
                 }
             } else if (!onlyKill && MoveGeneratorCheck.isLineExposedAfterMove(pos, idx, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) {
-                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0), pvMove);
+                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0));
             }
         }
     }

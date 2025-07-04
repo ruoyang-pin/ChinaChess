@@ -11,9 +11,7 @@ import com.domain.chess.BitBoard;
 import com.domain.location.SearchResult;
 import com.enumerates.ChessColor;
 import com.enums.ChessType;
-import com.ui.BoardPanel;
 import com.util.BitBoardMoveUtil;
-import com.util.BitBoardUtil;
 import com.util.ShareAlpha;
 import com.util.hash.BitBoardZobrist;
 import com.util.hash.HashPathStack;
@@ -56,20 +54,11 @@ public class AiChooseV2 {
     public static Integer queryPoint(BitBoard bitBoard, ChessColor aiColor) {
         Integer bestMove = null;
         int pvMove = -1;
-        //判断pv预测是否准确
-        int lastPvMove = PV_PATH[0];
-        if (lastPvMove != 0) {
-            int from = BitMoveUtil.getFrom(lastPvMove);
-            int to = BitMoveUtil.getTo(lastPvMove);
-            if (BoardPanel.LAST_MOVE_POINT == from && movedPos == to) {
-                pvMove = PV_PATH[1];
-            }
-        }
         long startTime = System.nanoTime();
         // 初始化
         BoardStateBuilder boardStateBuilder = BoardStateBuilder.getInstance();
         MoveBuffer moveBuffer = MoveBuffer.getInstance();
-        MoveGenerator.generateAllMoves(bitBoard, aiColor, boardStateBuilder, false, moveBuffer, pvMove);
+        MoveGenerator.generateAllMoves(bitBoard, aiColor, boardStateBuilder, false, moveBuffer);
         ShareAlpha.reset();
         int[] allMove = moveBuffer.getAllMove();
         Integer[] allMoves = Arrays.stream(allMove).boxed().toArray(Integer[]::new);
@@ -98,7 +87,7 @@ public class AiChooseV2 {
                     HashPathStack.getInstance().push(hash, 0, move);
                     int sharedAlpha = ShareAlpha.getSharedAlpha();
                     SearchResult result = minimax(boardCopy, MAX_DEPTH, sharedAlpha, Integer.MAX_VALUE,
-                            false, aiColor, count, 1, null, ALL_STEP + 1, hash, BitMoveUtil.equalsIgnoreScore(move, finalPvMove));
+                            false, aiColor, count, 1, null, ALL_STEP + 1, hash);
                     result.setCount(count);
                     int[] currentPath = result.getCurrentPath();
                     currentPath[0] = move;
@@ -158,11 +147,8 @@ public class AiChooseV2 {
         double elapsedTimeInSeconds = (endTime - startTime) / 1_000_000_000.0;
 
         if (result != null) {
-            //记录pv步数
-            Arrays.fill(PV_PATH, 0);
             int[] currentPath = result.getCurrentPath();
             int pathLength = result.getPathLength();
-            System.arraycopy(currentPath, 1, PV_PATH, 0, pathLength - 1);
             System.out.printf("得分为%s  共计算%s个节点 花费%s秒%n", bestScore, resultCount, elapsedTimeInSeconds);
             PathStack.print(currentPath, pathLength);
         }
@@ -170,13 +156,13 @@ public class AiChooseV2 {
     }
 
 
-    public static SearchResult minimax(BitBoard bitBoard, int depth, int alpha, int beta, boolean maximizing, ChessColor aiColor, int[] count, int plv, Boolean eatChess, Integer step, long hash, boolean pvExist) {
+    public static SearchResult minimax(BitBoard bitBoard, int depth, int alpha, int beta, boolean maximizing, ChessColor aiColor, int[] count, int plv, Boolean eatChess, Integer step, long hash) {
         count[0]++;
         ChessColor currentColor = maximizing ? aiColor : (aiColor == ChessColor.R ? ChessColor.B : ChessColor.R);
         int pvMove = -1;
         if (depth == 0) {
             if (Boolean.TRUE.equals(eatChess)) {
-                return quiescenceSearch(bitBoard, alpha, beta, maximizing, aiColor, count, plv, 0, step + 1, pvExist);
+                return quiescenceSearch(bitBoard, alpha, beta, maximizing, aiColor, count, plv, 0, step + 1);
             } else {
                 SearchResult acquire = SearchResultPoolManager.acquire();
                 acquire.setScore(FastEvaluate.evaluate(bitBoard, aiColor, step));
@@ -193,15 +179,12 @@ public class AiChooseV2 {
             acquire.setPathLength(plv);
             return acquire;
         }
-        if (pvExist) {
-            pvMove = PV_PATH[plv + 1];
-        }
         MoveBuffer moveBuffer = MoveBuffer.getInstance();
         int oldQuietCount = moveBuffer.getQuietCount();
         int oldCaptureCount = moveBuffer.getCaptureCount();
         int oldMoveCount = oldQuietCount + oldCaptureCount;
         // 初始化
-        MoveGenerator.generateAllMoves(bitBoard, currentColor, boardStateBuilder, false, moveBuffer, pvMove);
+        MoveGenerator.generateAllMoves(bitBoard, currentColor, boardStateBuilder, false, moveBuffer);
         int captureCount = moveBuffer.getCaptureCount();
         int quietCount = moveBuffer.getQuietCount();
         //排序
@@ -240,7 +223,7 @@ public class AiChooseV2 {
             boardStateBuilder.applyMove(from, to, chessTypeValue, currentColor);
             long newHash = BitBoardZobrist.getInstance().updateHash(hash, from, to, currentColor, chessType, isCapture, capturedTypeValue);
             hashPathStack.push(newHash, plv, move);
-            SearchResult result = minimax(bitBoard, depth - 1, alpha, beta, !maximizing, aiColor, count, plv + 1, isCapture, step + 1, newHash, BitMoveUtil.equalsIgnoreScore(move, pvMove));
+            SearchResult result = minimax(bitBoard, depth - 1, alpha, beta, !maximizing, aiColor, count, plv + 1, isCapture, step + 1, newHash);
             int eval = result.getScore();
             boardStateBuilder.undoMove(from, to, isCapture, capturedTypeValue, chessTypeValue, currentColor);
             BitBoardMoveUtil.undoMove(bitBoard, from, to, chessType, currentColor, isCapture, capturedTypeValue);
@@ -276,7 +259,7 @@ public class AiChooseV2 {
     }
 
 
-    private static SearchResult quiescenceSearch(BitBoard board, int alpha, int beta, boolean maximizing, ChessColor aiColor, int[] count, int plv, int qDepth, int step, boolean pvExist) {
+    private static SearchResult quiescenceSearch(BitBoard board, int alpha, int beta, boolean maximizing, ChessColor aiColor, int[] count, int plv, int qDepth, int step) {
         count[0]++;
         if (qDepth > MAX_QUIESCENCE_DEPTH) {
             SearchResult acquire = SearchResultPoolManager.acquire();
@@ -304,17 +287,13 @@ public class AiChooseV2 {
             }
             if (standPat < beta) beta = standPat;
         }
-        int pvMove = -1;
-        if (pvExist) {
-            pvMove = PV_PATH[plv + 1];
-        }
         BoardStateBuilder boardStateBuilder = BoardStateBuilder.getInstance();
         MoveBuffer moveBuffer = MoveBuffer.getInstance();
         int oldQuietCount = moveBuffer.getQuietCount();
         int oldCaptureCount = moveBuffer.getCaptureCount();
         int oldMoveCount = oldQuietCount + oldCaptureCount;
         // 初始化
-        MoveGenerator.generateAllMoves(board, currentColor, boardStateBuilder, true, moveBuffer, pvMove);
+        MoveGenerator.generateAllMoves(board, currentColor, boardStateBuilder, true, moveBuffer);
         int captureCount = moveBuffer.getCaptureCount();
         int quietCount = moveBuffer.getQuietCount();
         //排序
@@ -349,7 +328,7 @@ public class AiChooseV2 {
             }
             BitBoardMoveUtil.applyMove(board, from, to, chessType, currentColor, isCapture, capturedTypeValue);
             boardStateBuilder.applyMove(from, to, chessTypeValue, currentColor);
-            SearchResult result = quiescenceSearch(board, alpha, beta, !maximizing, aiColor, count, plv + 1, qDepth + 1, step + 1, BitMoveUtil.equalsIgnoreScore(move, pvMove));
+            SearchResult result = quiescenceSearch(board, alpha, beta, !maximizing, aiColor, count, plv + 1, qDepth + 1, step + 1);
             int eval = result.getScore();
             boardStateBuilder.undoMove(from, to, isCapture, capturedTypeValue, chessTypeValue, currentColor);
             BitBoardMoveUtil.undoMove(board, from, to, chessType, currentColor, isCapture, capturedTypeValue);

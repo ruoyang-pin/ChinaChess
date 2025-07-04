@@ -22,20 +22,6 @@ public class BitMoveUtil {
                 | ((score & 0xFF) << 24);
     }
 
-    public static int setScore(int move, int score) {
-        // 清除高 8 位
-        move &= 0x00FFFFFF;
-        // 设置新分数
-        move |= (score & 0xFF) << 24;
-        return move;
-    }
-
-    public static boolean equalsIgnoreScore(int move1, int move2) {
-        // 屏蔽分数字段（高8位），只比较低24位
-        return (move1 & 0x00FFFFFF) == (move2 & 0x00FFFFFF);
-    }
-
-
     public static int getFrom(int move) {
         return move & 0x7F;
     }

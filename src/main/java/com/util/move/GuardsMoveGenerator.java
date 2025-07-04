@@ -35,7 +35,7 @@ public class GuardsMoveGenerator {
     }
 
     public static void generateGuardsMoves(int pos, ChessColor color, int chessType, MoveBuffer moves,
-                                           final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos, int pvMove) {
+                                           final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos) {
         int row = POS_X[pos];
         int col = POS_Y[pos];
         int ordinal = color.ordinal();
@@ -59,11 +59,11 @@ public class GuardsMoveGenerator {
                 if (colorBoard[idx] == enemyOrdinal && MoveGeneratorCheck.isLineExposedAfterMove(pos, idx, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) {
                     byte type = typeBoard[idx];
                     int score = MoveBuffer.querySortScore(type);
-                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score), pvMove);
+                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score));
                 }
             } else if (!onlyKill && MoveGeneratorCheck.isLineExposedAfterMove(pos, idx, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) {
                 // 普通走法
-                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0), pvMove);
+                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0));
 
             }
         }

@@ -62,9 +62,6 @@ public class BitBoardValidator {
                 return false;
             }
 
-            // 此时 foundType 不为空，且唯一
-            // TODO 如果你有棋子颜色和类型的关系限制，可以在这里加校验
-            // 例如：Soldier 只能属于红方或黑方等
         }
 
         // 全部检查通过

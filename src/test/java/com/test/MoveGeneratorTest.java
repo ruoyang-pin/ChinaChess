@@ -65,7 +65,7 @@ public class MoveGeneratorTest {
         long duration = measureNanoTime(() -> {
             // 这里放你要测量的代码
             for (int i = 0; i < 1000000; i++) {
-                ints.addAndGet(CarMoveGenerator.generateCarMoves(0, ChessColor.B, ChessType.CAR.ordinal(), moves, builder, false, ChessColor.R, ownKingPos, enemyKingPos, pvMove));
+                ints.addAndGet(CarMoveGenerator.generateCarMoves(0, ChessColor.B, ChessType.CAR.ordinal(), moves, builder, false, ChessColor.R, ownKingPos, enemyKingPos));
 //                Pair<int[], Integer> pair = MoveGenerator.generateAllMoves(bitBoard, ChessColor.R, builder, 0,false);
 //                ints.addAndGet(pair.getLeft()[0]);
 //                SearchResult minimax = AiChooseV2.minimax(bitBoard, 1, Integer.MIN_VALUE, Integer.MAX_VALUE,

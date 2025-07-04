@@ -13,7 +13,7 @@ public class KingMoveGenerator {
 
 
     public static void generateKingMoves(BitBoard bitBoard, int pos, ChessColor color, int chessType, MoveBuffer moves,
-                                         int ownKingPos, int enemyKingPos, final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int pvMove) {
+                                         int ownKingPos, int enemyKingPos, final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor) {
 
         int row = POS_X[pos];
         int col = POS_Y[pos];
@@ -46,10 +46,10 @@ public class KingMoveGenerator {
                 if (colorBoard[idx] == enemyOrdinal) {
                     byte type = typeBoard[idx];
                     int score = MoveBuffer.querySortScore(type);
-                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score), pvMove);
+                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, idx, chessType, type, ordinal, score));
                 }
             } else if (!onlyKill) {
-                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0), pvMove);
+                moves.addQuietMove(BitMoveUtil.buildMove(pos, idx, chessType, ordinal, 0));
             }
         }
     }

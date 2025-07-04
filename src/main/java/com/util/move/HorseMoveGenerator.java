@@ -54,7 +54,7 @@ public final class HorseMoveGenerator {
     public static void generateHorseMoves(final int pos,
                                           final ChessColor color, final int chessType,
                                           final MoveBuffer moves,
-                                          final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos, int pvMove) {
+                                          final BoardStateBuilder boardStateBuilder, boolean onlyKill, ChessColor enemyColor, int ownKingPos, int enemyKingPos) {
 
         int state = 0;
         int ordinal = color.ordinal();
@@ -81,10 +81,10 @@ public final class HorseMoveGenerator {
                     //评分
                     byte type = typeBoard[target];
                     int score = MoveBuffer.querySortScore(type);
-                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, target, chessType, type, ordinal, score), pvMove);
+                    moves.addCaptureMove(BitMoveUtil.buildCaptureMove(pos, target, chessType, type, ordinal, score));
                 }
             } else if (!onlyKill && MoveGeneratorCheck.isLineExposedAfterMove(pos, target, ownKingPos, enemyColor, boardStateBuilder, enemyKingPos)) { // 走子路径
-                moves.addQuietMove(BitMoveUtil.buildMove(pos, target, chessType, ordinal, 0), pvMove);
+                moves.addQuietMove(BitMoveUtil.buildMove(pos, target, chessType, ordinal, 0));
             }
         }
     }

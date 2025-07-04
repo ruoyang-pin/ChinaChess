@@ -55,23 +55,13 @@ public class MoveBuffer {
     }
 
     // 添加吃子走法
-    public void addCaptureMove(int move, int pvMove) {
-        addMove(move, pvMove, true);
+    public void addCaptureMove(int move) {
+        captureMoves[captureCount++] = move;
     }
 
     // 添加空步
-    public void addQuietMove(int move, int pvMove) {
-        addMove(move, pvMove, false);
-    }
-
-
-    private void addMove(int move, int pvMove, boolean capture) {
-        if (pvMove == move) {
-            captureMoves[captureCount++] = BitMoveUtil.setScore(move, PV_SCORE);
-        } else {
-            if (capture) captureMoves[captureCount++] = move;
-            else quietMoves[quietCount++] = move;
-        }
+    public void addQuietMove(int move) {
+        quietMoves[quietCount++] = move;
     }
 
 

@@ -24,9 +24,6 @@ public class BitBoardUtil {
 
     public static final List<Integer> validMovePositions = Lists.newArrayList();
 
-    public static final int[] PV_PATH = new int[20];
-
-
     public static int getIndex(int row, int col) {
         return row * 9 + col; // 0 ~ 89
     }
