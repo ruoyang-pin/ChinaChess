@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'me.champeau.jmh' version '0.7.1' // 添加JMH插件
+}
+group 'org.rich'
+version '1.0-SNAPSHOT'
+allprojects {
+    repositories {
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+        google()
+        mavenCentral()
+    }
+}
+repositories {
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.guava:guava:30.0-jre'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.openjdk.jmh:jmh-core:1.36'
+    implementation 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
+    implementation 'it.unimi.dsi:fastutil:8.5.12'
+    // 如果测试代码在 src/test/java 下，还需添加 test 作用域依赖
+    testImplementation 'org.openjdk.jmh:jmh-core:1.36'
+
+}
+
+
+jmh {
+    iterations = 5 // 测试迭代次数
+    fork = 1 // JVM 进程数
+    warmupIterations = 3 // 预热迭代次数
+    benchmarkMode = ['avgt'] // 测试模式（平均时间）
+    timeUnit = 'ns' // 时间单位（纳秒）
+    jvmArgs = ['-Xms2g', '-Xmx2g']
+    profilers = ['stack'] // 指定可用的分析器
+}
+
+test {
+    useJUnitPlatform()
+}
